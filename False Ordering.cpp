@@ -1,61 +1,72 @@
 #include <iostream>
+#include <utility>
+#include <cmath>
+
 
 using namespace std;
 
-bool prime[1001] = {false} ;
-bool t_prime[1001] = {false} ;
-bool almost_prime[1001] = {false};
+struct Order{
+    int number;
+    int divisor;
+};
 
-void setPrime(){
-    prime [1] = true;
-    for(int i=2; i<=31; i++){
-        if(!prime[i]){
-            for(int j= i*i; j<=1000; j+=i){
-                prime[j]= true;
+ Order falseOrder[1001];
+
+int divisor(int num);
+void order();
+void sort();
+
+int main(){
+    order();
+    int T;
+    cin >> T;
+
+    for(int i=1; i<=T; i++){
+        int num;
+        cin >> num;
+        cout << "Case " << i << ": " << falseOrder[num].number << endl;
+    }
+
+}
+
+
+int divisor(int num){
+    int count = 0;
+    int test = sqrt(num);
+    for(int i=1; i<=test;i++){
+        if(num%i==0){
+            if(i*i==num){
+                count+=1;
+            }
+            else{
+                count+=2;
             }
         }
     }
+
+    return count;
 }
-void setT_prime(){
-    setPrime();
-    for(int i=2; i<=32; i++){
-        if(!prime[i]){
-            t_prime[i*i] = true;
-        }
+
+
+void order(){
+    falseOrder[0].number=0;
+    falseOrder[0].divisor=0;
+    int n=1001;
+    while (--n){
+        falseOrder[n].number = n;
+        falseOrder[n].divisor = divisor(n);
     }
 
+    sort();
+
 }
-void setAlmost_prime(){
-    setT_prime();
-    for(int i=6;i < 1000; i++){
-        if(prime[i] && !t_prime[i]){
-            int mark = 0;
-            for(int j=2; j<i; j++){
-                if(i%j==0){
-                    if(prime[j])
-                        break;
-                    if(prime[i/j])
-                        break;
-                    mark++;
-                }
+
+void sort(){
+    for(int i=0;i<1000;i++){
+        for(int j=i+1; j<=1000; j++){
+            if(falseOrder[i].divisor >= falseOrder[j].divisor){
+                swap(falseOrder[i],falseOrder[j]);
             }
-            if(mark==2)
-                almost_prime[i]= true;
         }
     }
-
-}
-
-int main() {
-    setAlmost_prime();
-    int  count = 0;
-    for(int i=0; i < 1000; i++){
-        if(almost_prime[i]){
-            cout << i << endl;
-            count++;
-        }
-
-    }
-    cout << count << endl;
-    return 0;
 }
